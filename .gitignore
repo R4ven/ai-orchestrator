@@ -32,5 +32,11 @@ apps/*/.output/
 apps/*/.nuxt/
 apps/*/node_modules/
 
+# Electron build output
+apps/desktop/out/
+apps/desktop/dist/
+apps/desktop/dist-types/
+apps/desktop/build/
+
 coverage/
 .eslintcache

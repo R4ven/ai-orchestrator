@@ -1,0 +1,49 @@
+{
+  "name": "@ai-orchestrator/desktop",
+  "version": "0.1.0",
+  "description": "Electron desktop app for the AI Orchestrator and Agentic Team, with first-class local LLM (Ollama/llama.cpp) support.",
+  "private": true,
+  "type": "module",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "postinstall": "electron-rebuild -f -w better-sqlite3 || true",
+    "dist:mac": "electron-vite build && electron-builder --mac",
+    "dist:win": "electron-vite build && electron-builder --win",
+    "dist:linux": "electron-vite build && electron-builder --linux",
+    "clean": "rimraf out dist"
+  },
+  "dependencies": {
+    "@ai-orchestrator/agentic-team": "*",
+    "@ai-orchestrator/context-graph": "*",
+    "@ai-orchestrator/orchestrator": "*",
+    "@ai-orchestrator/shared": "*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.7.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^2.3.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11"
+  },
+  "build": {
+    "appId": "dev.ai-orchestrator.desktop",
+    "productName": "AI Orchestrator",
+    "files": ["out/**/*", "package.json", "node_modules/**/*", "!**/*.ts", "!**/*.map"],
+    "asarUnpack": ["**/*.node"],
+    "npmRebuild": true,
+    "directories": { "buildResources": "resources" },
+    "mac": { "category": "public.app-category.developer-tools", "target": "dmg" },
+    "win": { "target": "nsis" },
+    "linux": { "target": "AppImage", "category": "Development" }
+  }
+}
