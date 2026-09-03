@@ -1,0 +1,35 @@
+{
+  "name": "@ai-orchestrator/graphify",
+  "version": "0.1.0",
+  "description": "Turns a project directory into a queryable knowledge graph (SQLite + FTS5): files, classes, functions, imports, and their relationships, with search, export, and a REST API.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "graphify": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "start": "tsx src/cli.ts",
+    "dev": "tsx watch src/cli.ts",
+    "test": "vitest run",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@ai-orchestrator/shared": "*",
+    "better-sqlite3": "^11.7.0",
+    "chalk": "^5.4.1",
+    "commander": "^12.1.0",
+    "express": "^4.21.2",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/express": "^4.17.21",
+    "@types/js-yaml": "^4.0.9",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -196,5 +196,3 @@ export class MemoryManager {
     this.store.close();
   }
 }
-
-export { generateProjectId, scanProject };
