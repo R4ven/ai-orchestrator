@@ -3,7 +3,7 @@ import { getLogger, type BaseAdapter, type Logger } from "@ai-orchestrator/share
 import { getMetricsCollector } from "../observability/metrics.js";
 import type { WorkflowStepConfig } from "./workflow.js";
 
-const PLANNER_PREFERENCE = ["claude", "gemini", "codex", "local-instruct"];
+const PLANNER_PREFERENCE = ["claude", "gemini", "codex", "local-instruct", "local-code", "local-large"];
 
 export class PlannerAgent {
   private readonly logger: Logger;

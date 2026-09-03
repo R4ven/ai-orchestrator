@@ -45,30 +45,34 @@ function coercePositiveInt(raw: unknown, fallback: number): number {
 }
 
 export function defaultRoles(pickPreferredAgent: (preferred: string[]) => string | undefined): Record<string, RoleSpec> {
+  // Cloud CLIs are preferred when available; local Ollama/llama.cpp agents are
+  // listed last in each role's preference order so a pure-local, no-cloud-CLI
+  // setup (e.g. the desktop app on a fresh machine) still gets sensible
+  // per-role agent picks instead of just falling back to "whatever's first".
   return {
     [ROLE_PROJECT_MANAGER]: {
       title: "Project Manager (Team Lead)",
-      agent: pickPreferredAgent(["claude", "gemini", "codex", "copilot"]),
+      agent: pickPreferredAgent(["claude", "gemini", "codex", "copilot", "local-instruct", "local-code", "local-large"]),
       responsibilities: "Initiate work, route subtasks, and perform final approval.",
     },
     [ROLE_SOFTWARE_ARCHITECT]: {
       title: "Software Architect",
-      agent: pickPreferredAgent(["gemini", "claude", "codex", "copilot"]),
+      agent: pickPreferredAgent(["gemini", "claude", "codex", "copilot", "local-instruct", "local-large", "local-code"]),
       responsibilities: "Define architecture and technical design.",
     },
     [ROLE_SOFTWARE_DEVELOPER]: {
       title: "Software Developer",
-      agent: pickPreferredAgent(["codex", "claude", "copilot", "gemini"]),
+      agent: pickPreferredAgent(["codex", "claude", "copilot", "gemini", "local-code", "local-large", "local-instruct"]),
       responsibilities: "Implement and update source code.",
     },
     [ROLE_QA_ENGINEER]: {
       title: "QA Engineer",
-      agent: pickPreferredAgent(["gemini", "copilot", "claude", "codex"]),
+      agent: pickPreferredAgent(["gemini", "copilot", "claude", "codex", "local-instruct", "local-code", "local-large"]),
       responsibilities: "Validate behavior and identify regressions.",
     },
     [ROLE_DEVOPS_ENGINEER]: {
       title: "DevOps Engineer",
-      agent: pickPreferredAgent(["claude", "codex", "gemini", "copilot"]),
+      agent: pickPreferredAgent(["claude", "codex", "gemini", "copilot", "local-instruct", "local-code", "local-large"]),
       responsibilities: "Handle deployment, runtime, and operational concerns.",
     },
   };

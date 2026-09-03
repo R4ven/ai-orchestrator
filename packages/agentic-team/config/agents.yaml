@@ -32,9 +32,11 @@ agents:
     timeout: 3600
     description: "Alternative suggestions agent"
 
+  # Enabled by default: local models should work with no cloud CLI installed.
+  # If Ollama/llama.cpp isn't reachable, the startup health probe just skips them.
   local-code:
     type: ollama
-    enabled: false
+    enabled: true
     model: "codellama:13b"
     endpoint: "http://localhost:11434"
     offline: true
@@ -43,7 +45,7 @@ agents:
 
   local-instruct:
     type: ollama
-    enabled: false
+    enabled: true
     model: "mistral:7b-instruct"
     endpoint: "http://localhost:11434"
     offline: true
@@ -52,7 +54,7 @@ agents:
 
   local-large:
     type: llamacpp
-    enabled: false
+    enabled: true
     endpoint: "http://localhost:8080"
     offline: true
     timeout: 3600

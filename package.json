@@ -22,8 +22,8 @@
     "mcp-server": "npm run start --workspace=@ai-orchestrator/mcp-server --",
     "graphify": "npm run start --workspace=@ai-orchestrator/graphify --",
     "context-dashboard": "npm run start --workspace=@ai-orchestrator/context-dashboard --",
-    "run-ui": "npm run start --workspace=@ai-orchestrator/orchestrator-ui",
-    "run-agentic-ui": "npm run start --workspace=@ai-orchestrator/agentic-team-ui"
+    "desktop": "npm run dev --workspace=@ai-orchestrator/desktop",
+    "desktop:build": "npm run build --workspace=@ai-orchestrator/desktop"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
