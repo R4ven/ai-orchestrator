@@ -28,7 +28,7 @@
                     │   project scanner — each caller opens its own DB  │
                     └───────────────────────────────────────────────┘
 
-   apps/orchestrator-ui (:5001)   apps/agentic-team-ui (:5002)   packages/context-dashboard (:5003)
+   apps/desktop (Electron main process, IPC — no HTTP server)   packages/context-dashboard (:5003, optional)
    packages/mcp-server (stdio)    packages/graphify (CLI + REST API, independent SQLite+FTS5 graph)
 ```
 
@@ -88,8 +88,10 @@ its **own** database file (`~/.ai-orchestrator/context.db` and
 - `core/taskManager.ts` — in-memory task lifecycle tracking (mirrors the
   original; not deeply wired into the engine, same as upstream).
 - `observability/metrics.ts` — `prom-client`-backed counters/histograms
-  (`orchestrator_tasks_total`, `orchestrator_agent_calls_total`, ...),
-  exposed at `/metrics` on the Orchestrator UI.
+  (`orchestrator_tasks_total`, `orchestrator_agent_calls_total`, ...). Not
+  wired to an HTTP `/metrics` endpoint in the desktop app (no server); the
+  `MetricsCollector` is still available for anything that wants to expose
+  or inspect it (e.g. a future export/telemetry panel).
 - `observability/health.ts`, `reportGenerator.ts` — health probes and
   JSON/HTML execution reports (`reports/exec_*.json`, `dashboard_*.html`).
 - `security/security.ts` — `InputValidator` (task/workflow/agent-name/path
@@ -139,8 +141,10 @@ context-graph memory: `PROJECT`/`DIRECTORY`/`FILE`/`CLASS`/`FUNCTION`/
 `IMPORT`/`CONFIG`/`DOCUMENTATION`/`TEST` nodes connected by `CONTAINS`/
 `IMPORTS`/`TESTS`/`DOCUMENTS`/`CONFIGURED_BY` edges. `Scanner` walks a
 project tree and dispatches each file to the first `Analyzer` that supports
-its `Language` (JS/TS, Python, JSON/YAML/TOML config, Markdown docs — see
-the README for why these are regex-based rather than full AST parses).
+its `Language` (JS/TS, Python, **PHP**, JSON/YAML/TOML config, Markdown
+docs — see the README for why these are regex-based rather than full AST
+parses; the PHP analyzer extracts classes/interfaces/traits, functions, and
+`use`/`require`/`include` imports the same way the JS/Python ones do).
 `GraphStore` adds BFS path-finding and "most connected node" analysis on
 top of the same node/edge/FTS5 pattern as `context-graph`. Exports to JSON,
 DOT, Markdown, GraphML; a small Express API mirrors the CLI's `search`/
@@ -153,14 +157,30 @@ every request — no long-lived connection to either), aggregates node/edge
 counts, and serves a single-page dashboard with live cross-graph full-text
 search.
 
-### `apps/orchestrator-ui`, `apps/agentic-team-ui`
+### `apps/desktop`
 
-Express + Socket.IO backends wrapping each engine, serving a static
-frontend. `run_task` (Socket.IO event) streams `step`/`turn` events as the
-engine executes, then a `task_complete` event with the final result. See
-the README's "What's intentionally different" section for why these are
-plain HTML/CSS/JS rather than the original's Nuxt/Vue/Tailwind/Monaco/Pinia
-stack.
+The primary UI: an Electron app (main + preload + React renderer, built
+with `electron-vite`). **No HTTP server** — `Orchestrator` and
+`AgenticTeamEngine` run directly inside the Electron main process
+(`src/main/ipc.ts`), and the React renderer talks to them exclusively over
+IPC:
+
+- `ipcMain.handle('orchestrator:run', ...)` / `'agentic-team:run'` —
+  request/response, same shape as the old REST calls.
+- `mainWindow.webContents.send('orchestrator:step', ...)` /
+  `'agentic-team:turn'` — streamed progress, replacing the old Socket.IO
+  events.
+- `src/preload/index.ts` bridges both via `contextBridge.exposeInMainWorld`,
+  fully typed for the renderer through `src/preload/index.d.ts`'s
+  `window.api`.
+
+The React UI (`src/renderer/src`) has three tabs: **Orchestrator**,
+**Agentic Team** (both mirroring the previous web UIs' run-and-watch-progress
+flow), and **Local Models** — an Ollama health check, installed-model list,
+and pull/remove controls, since local LLMs are meant to work out of the box
+here with no cloud CLI configured. See [apps/desktop/README.md](apps/desktop/README.md)
+for the IPC contract diagram and native-module (better-sqlite3) packaging
+notes.
 
 ## Data flow: one Orchestrator task
 

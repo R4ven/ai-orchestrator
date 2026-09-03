@@ -20,7 +20,6 @@ npm run build
 
 echo ""
 echo "Done. Try:"
+echo "  npm run desktop          # Electron desktop app (Orchestrator, Agentic Team, Local Models)"
 echo "  npm run orchestrator -- --help"
 echo "  npm run agentic-team -- --help"
-echo "  npm run run-ui           # Orchestrator web UI on :5001"
-echo "  npm run run-agentic-ui   # Agentic Team web UI on :5002"
