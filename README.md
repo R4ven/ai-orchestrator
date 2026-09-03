@@ -13,77 +13,41 @@
 ![MIT License](https://img.shields.io/badge/License-MIT-green)
 
 A TypeScript rebuild of [hoangsonww/AI-Agents-Orchestrator](https://github.com/hoangsonww/AI-Agents-Orchestrator),
-shipped as an **Electron desktop app** with a **React** UI: coordinate cloud
-and local AI coding assistants (Claude Code, OpenAI Codex, Gemini CLI,
-GitHub Copilot CLI, Ollama, llama.cpp) to collaborate on software
-development tasks — fully usable offline with local LLMs, no cloud CLI or
-API key required to get started.
+shipped as **one Electron desktop app**: type a task, pick Orchestrator or
+Agentic Team, and watch it get worked on live. Local LLMs (via
+[Ollama](https://ollama.com)) work with zero setup — no cloud CLI, no API
+key, no server to run.
 
-1. **Orchestrator** — step-based workflow pipeline (implement → review → refine).
-2. **Agentic Team** — free role-to-role communication (PM, Architect, Developer, QA, DevOps) until the lead finalizes.
-3. **Desktop app** (`apps/desktop`) — the primary UI: Electron + React, talking to both engines directly via IPC (no HTTP server).
-4. **Graphify** — turns a project directory into a queryable knowledge graph (SQLite + FTS5), including a PHP analyzer alongside JS/TS/Python.
-5. **MCP Server** — exposes both engines plus code-analysis/security/testing/DevOps/context tools to IDE assistants over the Model Context Protocol.
-6. **Context Dashboard** — visualizes and searches both engines' independent context-graph memories.
+**There is exactly one thing you run: `npm start`.** It opens the app; the
+engines run inside it. Nothing else needs to be running in another
+terminal. (Everything below the Quick Start — the CLIs, the MCP server, the
+dashboard — is optional tooling for other use cases, not part of using the
+app.)
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for how the pieces fit together and
-where this rebuild intentionally diverges from the original, and
-[QUICKSTART.md](QUICKSTART.md) to get running in a few minutes.
-
-## Project layout
-
-```
-ai-orchestrator/
-├── packages/
-│   ├── shared/              # Adapters (Claude/Codex/Gemini/Copilot/Ollama/llama.cpp), retry/fallback/offline
-│   ├── context-graph/       # SQLite+FTS5 graph memory (used independently by orchestrator & agentic-team)
-│   ├── orchestrator/        # Workflow engine, planner, CLI (`ai-orchestrator`)
-│   ├── agentic-team/        # Free-communication engine, CLI (`agentic-team`)
-│   ├── mcp-server/          # MCP server (25+ tools)
-│   ├── graphify/            # Code-graph scanner (JS/TS, Python, PHP, config, docs), CLI, REST API
-│   └── context-dashboard/   # Aggregated dashboard for both context graphs
-└── apps/
-    └── desktop/              # Electron + React desktop app (primary UI)
-```
-
-Each package builds independently (`tsc -b` with project references) and
-is a real npm workspace — `import { ... } from "@ai-orchestrator/shared"` etc.
+where this rebuild intentionally diverges from the original.
 
 ## Quick start
 
 ```bash
 npm install
-npm run build
-
-npm run desktop            # Electron desktop app (Orchestrator, Agentic Team, Local Models)
+npm start
 ```
 
-Local LLMs work out of the box: if [Ollama](https://ollama.com) is running
-on `localhost:11434`, both engines pick it up automatically — no cloud CLI
-or config changes needed. Check the app's **Local Models** tab to verify
-connectivity and pull models.
+That's it — `npm start` builds the four engine packages the app needs
+(`shared`, `context-graph`, `orchestrator`, `agentic-team`) and launches the
+Electron app in one step. The app has three tabs:
 
-For headless/CLI use:
+- **Orchestrator** — enter a task, pick a workflow, watch each step run live.
+- **Agentic Team** — enter a task, watch the roles (PM/Architect/Developer/QA/DevOps) discuss it in real time until the lead delivers a result.
+- **Local Models** — check Ollama connectivity, list/pull/remove local models. If Ollama is running on `localhost:11434`, it's picked up automatically — no config changes needed.
 
-```bash
-npm run orchestrator -- shell            # interactive orchestrator REPL
-npm run agentic-team -- shell            # interactive agentic-team REPL
-npm run orchestrator -- run "Build a REST API" --workflow default
+Cloud CLI agents (`claude`, `codex`, `gemini`, `copilot`) are also enabled
+by default; the app silently skips any whose CLI isn't installed. To enable/
+disable specific agents, edit `packages/orchestrator/config/agents.yaml`
+and `packages/agentic-team/config/agents.yaml`.
 
-npm run context-dashboard # Context Dashboard   → http://localhost:5003
-npm run mcp-server        # MCP server over stdio
-npm run graphify -- scan .
-```
-
-Each system reads its own `agents.yaml`
-(`packages/orchestrator/config/agents.yaml` and
-`packages/agentic-team/config/agents.yaml`). Cloud CLI agents (`claude`,
-`codex`, `gemini`, `copilot`) are enabled by default too — the startup
-health probe silently skips any you don't have installed. Run
-`npm run orchestrator -- validate` / `npm run agentic-team -- validate` to
-check the config.
-
-## Packaging as a desktop app
+To build a distributable installer instead of running in dev mode:
 
 ```bash
 npm run dist:mac --workspace=@ai-orchestrator/desktop    # or dist:win / dist:linux
@@ -93,10 +57,50 @@ See [apps/desktop/README.md](apps/desktop/README.md) for the IPC
 architecture, native-module (better-sqlite3) rebuild notes, and packaging
 caveats.
 
+## Project layout
+
+```
+ai-orchestrator/
+├── packages/
+│   ├── shared/              # Adapters (Claude/Codex/Gemini/Copilot/Ollama/llama.cpp), retry/fallback/offline
+│   ├── context-graph/       # SQLite+FTS5 graph memory (used independently by orchestrator & agentic-team)
+│   ├── orchestrator/        # Workflow engine, planner — powers the app's Orchestrator tab
+│   ├── agentic-team/        # Free-communication engine — powers the app's Agentic Team tab
+│   ├── mcp-server/          # optional: MCP server (25+ tools) for IDE assistants
+│   ├── graphify/            # optional: code-graph scanner (JS/TS, Python, PHP, config, docs) CLI + REST API
+│   └── context-dashboard/   # optional: web dashboard over both context graphs
+└── apps/
+    └── desktop/              # the Electron + React app — this is what `npm start` runs
+```
+
+Each package builds independently (`tsc -b` with project references) and
+is a real npm workspace — `import { ... } from "@ai-orchestrator/shared"` etc.
+`orchestrator` and `agentic-team` also ship their own CLIs
+(`npm run orchestrator -- shell`, etc.) for headless/scripted use — see
+"Optional additional tools" below — but neither the app nor those CLIs
+depend on the other running.
+
 ## Testing
 
 ```bash
 npm test   # runs each package's Vitest suite
+```
+
+## Optional additional tools
+
+None of these are needed to use the app — they're separate, standalone
+pieces for other use cases (scripting, IDE integration, visualizing the
+context graph). Each is its own process you'd run *instead of*, not
+*alongside*, the desktop app, only if you specifically want that tool:
+
+```bash
+npm run orchestrator -- shell            # interactive orchestrator REPL (no UI)
+npm run agentic-team -- shell            # interactive agentic-team REPL (no UI)
+npm run orchestrator -- run "Build a REST API" --workflow default
+
+npm run mcp-server        # MCP server over stdio, for Claude Desktop / IDE MCP clients
+npm run graphify -- scan .   # turn a project into a queryable code graph
+npm run context-dashboard # web dashboard over both engines' context graphs → http://localhost:5003
 ```
 
 ## What's intentionally different from the original

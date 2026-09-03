@@ -2,7 +2,7 @@
   "name": "ai-orchestrator-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "TypeScript rebuild of AI-Agents-Orchestrator: an Orchestrator, an Agentic Team runtime, an MCP server, a Context Dashboard, and Graphify, coordinating cloud and local AI coding assistants.",
+  "description": "TypeScript rebuild of AI-Agents-Orchestrator as an Electron desktop app (Orchestrator + Agentic Team engines, first-class local LLMs via Ollama), plus optional CLI/MCP-server/Graphify/Context-Dashboard tooling.",
   "license": "MIT",
   "workspaces": [
     "packages/*",
@@ -12,18 +12,20 @@
     "node": ">=20"
   },
   "scripts": {
+    "start": "npm run build:core && npm run desktop",
     "build": "npm run build --workspaces --if-present",
+    "build:core": "npm run build --workspace=@ai-orchestrator/shared --workspace=@ai-orchestrator/context-graph --workspace=@ai-orchestrator/orchestrator --workspace=@ai-orchestrator/agentic-team",
     "test": "npm run test --workspaces --if-present",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"packages/**/*.ts\" \"apps/**/*.ts\"",
     "clean": "npm run clean --workspaces --if-present",
+    "desktop": "npm run dev --workspace=@ai-orchestrator/desktop",
+    "desktop:build": "npm run build --workspace=@ai-orchestrator/desktop",
     "orchestrator": "npm run start --workspace=@ai-orchestrator/orchestrator --",
     "agentic-team": "npm run start --workspace=@ai-orchestrator/agentic-team --",
     "mcp-server": "npm run start --workspace=@ai-orchestrator/mcp-server --",
     "graphify": "npm run start --workspace=@ai-orchestrator/graphify --",
-    "context-dashboard": "npm run start --workspace=@ai-orchestrator/context-dashboard --",
-    "desktop": "npm run dev --workspace=@ai-orchestrator/desktop",
-    "desktop:build": "npm run build --workspace=@ai-orchestrator/desktop"
+    "context-dashboard": "npm run start --workspace=@ai-orchestrator/context-dashboard --"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

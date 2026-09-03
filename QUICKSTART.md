@@ -3,79 +3,63 @@
 ## Prerequisites
 
 - Node.js 20+
-- Optional: [Ollama](https://ollama.com) running locally (`ollama serve`) for
-  fully offline use, and/or one of `claude`, `codex`, `gemini`, `copilot`
-  CLI installed and authenticated for cloud agents. Neither is required to
-  install and build — the app just has fewer available agents until you add
-  one.
+- Nothing else is required. Optionally: [Ollama](https://ollama.com) running
+  locally (`ollama serve`) for local models, and/or one of `claude`,
+  `codex`, `gemini`, `copilot` CLI installed and authenticated for cloud
+  agents — the app works with any combination of these, including none.
 
-## 1. Install and build
+## Run it
 
 ```bash
 git clone <this-repo>
 cd ai-orchestrator
 npm install
-npm run build
+npm start
 ```
 
-(`scripts/install.sh` does the same, plus a Node-version check.)
+`npm start` builds the engine packages and launches the Electron app —
+that's the entire setup. **This is the only process you need running.**
+Nothing else has to run alongside it in another terminal.
 
-## 2. Launch the desktop app
+The app has three tabs:
+
+- **Orchestrator** — type a task, pick a workflow, watch each step execute live.
+- **Agentic Team** — type a task, watch the roles discuss it until the lead delivers a result.
+- **Local Models** — Ollama connectivity check, install/remove local models.
+
+If Ollama is running, local agents work immediately with no configuration.
+For cloud agents, install/authenticate the relevant CLI (`claude`, `codex`,
+`gemini`, `copilot`); the app detects and uses whatever's available.
+
+## Packaging a distributable build
 
 ```bash
-npm run desktop
+npm run dist:mac --workspace=@ai-orchestrator/desktop   # or dist:win / dist:linux
 ```
 
-Opens the Electron app with three tabs: **Orchestrator**, **Agentic Team**,
-and **Local Models**. If Ollama is running, local agents are detected
-automatically — check the Local Models tab to confirm connectivity and pull
-a model if you don't have one yet (e.g. `codellama:13b` or
-`mistral:7b-instruct`).
+See [apps/desktop/README.md](apps/desktop/README.md) for packaging details.
 
-To package a distributable build: see
-[apps/desktop/README.md](apps/desktop/README.md).
+## Everything else is optional
 
-## 3. (Optional) point the config at cloud agents you have
+The CLIs, MCP server, Graphify, and Context Dashboard are separate,
+standalone tools — not required for and not used by the desktop app. Run
+one only if you specifically want that tool (e.g. scripting a task without
+a UI, or plugging the MCP server into an IDE):
 
-Edit `packages/orchestrator/config/agents.yaml` (and/or
-`packages/agentic-team/config/agents.yaml`) if you want to use `claude`,
-`codex`, `gemini`, or `copilot` — they're enabled by default but only
-actually used once their CLI is installed and authenticated. Then check the
-config:
+```bash
+npm run orchestrator -- shell
+npm run agentic-team -- shell
+npm run orchestrator -- run "Create a Python REST API" --workflow default
+
+npm run graphify -- scan .
+npm run mcp-server
+npm run context-dashboard   # http://localhost:5003
+```
+
+## Verify
 
 ```bash
 npm run orchestrator -- validate
 npm run agentic-team -- validate
-```
-
-## 4. Headless / CLI use
-
-```bash
-# Interactive shells
-npm run orchestrator -- shell
-npm run agentic-team -- shell
-
-# One-shot
-npm run orchestrator -- run "Create a Python REST API" --workflow default
-npm run agentic-team -- run "Build a REST API with auth"
-
-# Graphify: turn a project into a knowledge graph (JS/TS, Python, PHP, config, docs)
-npm run graphify -- scan .
-npm run graphify -- search "class User" --project .
-npm run graphify -- stats .
-
-# MCP server (for Claude Desktop / IDE MCP clients), over stdio
-npm run mcp-server
-
-# Context Dashboard (optional, visualizes both context graphs)
-npm run context-dashboard # http://localhost:5003
-```
-
-## 5. Verify
-
-```bash
-npm run orchestrator -- --help
-npm run orchestrator -- agents
-npm run orchestrator -- workflows
 npm test
 ```
