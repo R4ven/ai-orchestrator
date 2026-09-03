@@ -1,0 +1,35 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: -apple-system, system-ui, sans-serif; background: #0b0f14; color: #e6edf3; }
+.app { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 0; }
+h1 { font-size: 1.35rem; margin: 0; font-weight: 700; }
+.badge { font-size: 0.75rem; padding: 0.25rem 0.7rem; border-radius: 999px; background: #30363d; color: #8b949e; }
+.badge.healthy { background: #23863633; color: #3fb950; }
+.badge.degraded { background: #9e6a0333; color: #d29922; }
+.badge.unhealthy { background: #f8514933; color: #ff7b72; }
+
+main { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.panel { background: #161b22; border: 1px solid #22303c; border-radius: 12px; padding: 1.25rem; }
+.form-panel { grid-column: 1 / -1; }
+.log-panel, .output-panel { min-height: 320px; }
+
+label { display: block; font-size: 0.8rem; color: #8b949e; margin-bottom: 0.35rem; }
+textarea, input, select { width: 100%; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #e6edf3; font-family: inherit; font-size: 0.95rem; }
+.row { display: flex; gap: 1rem; margin-top: 0.75rem; }
+.field { flex: 1; }
+
+button { margin-top: 1rem; padding: 0.65rem 1.4rem; border-radius: 8px; border: none; background: #238636; color: white; font-weight: 600; cursor: pointer; font-size: 0.95rem; }
+button:hover { background: #2ea043; }
+button:disabled { background: #30363d; cursor: not-allowed; }
+
+.agents { margin-top: 1rem; font-size: 0.85rem; color: #8b949e; }
+#agentsList { color: #58a6ff; }
+
+h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: #8b949e; margin: 0 0 0.75rem; }
+.log { font-family: ui-monospace, monospace; font-size: 0.82rem; max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem; }
+.log-entry { padding: 0.5rem 0.6rem; border-radius: 6px; background: #0d1117; border-left: 3px solid #30363d; }
+.log-entry.success { border-left-color: #3fb950; }
+.log-entry.failure { border-left-color: #ff7b72; }
+
+pre#output { white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, monospace; font-size: 0.85rem; max-height: 420px; overflow-y: auto; margin: 0; }

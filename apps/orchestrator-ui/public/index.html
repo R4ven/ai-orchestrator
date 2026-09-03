@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Orchestrator</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>AI Orchestrator</h1>
+    <div id="healthBadge" class="badge">checking...</div>
+  </header>
+
+  <main>
+    <section class="panel form-panel">
+      <label for="task">Task</label>
+      <textarea id="task" rows="4" placeholder="Describe what you want the agents to build..."></textarea>
+
+      <div class="row">
+        <div class="field">
+          <label for="workflow">Workflow</label>
+          <select id="workflow"></select>
+        </div>
+        <div class="field">
+          <label for="maxIterations">Max iterations</label>
+          <input id="maxIterations" type="number" min="1" max="10" placeholder="default" />
+        </div>
+      </div>
+
+      <button id="runBtn">Run task</button>
+
+      <div class="agents">
+        <span>Available agents:</span>
+        <span id="agentsList">loading...</span>
+      </div>
+    </section>
+
+    <section class="panel log-panel">
+      <h2>Execution log</h2>
+      <div id="log" class="log"></div>
+    </section>
+
+    <section class="panel output-panel">
+      <h2>Final output</h2>
+      <pre id="output">Run a task to see results here.</pre>
+    </section>
+  </main>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

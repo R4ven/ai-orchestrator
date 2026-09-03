@@ -167,7 +167,12 @@ export class Orchestrator {
     this.metrics.updateActiveAgents(Object.keys(this.adapters).length);
   }
 
-  async executeTask(task: string, workflowName = "default", maxIterationsOverride?: number): Promise<ExecutionResults> {
+  async executeTask(
+    task: string,
+    workflowName = "default",
+    maxIterationsOverride?: number,
+    onStep?: (step: IterationStepResult, iteration: number) => void,
+  ): Promise<ExecutionResults> {
     await this.initialize();
 
     const executionStart = Date.now();
@@ -233,7 +238,7 @@ export class Orchestrator {
 
       context.iteration = iteration;
 
-      const iterationResults = await this.executeWorkflowIteration(steps, context);
+      const iterationResults = await this.executeWorkflowIteration(steps, context, (step) => onStep?.(step, iteration));
       results.iterations.push(iterationResults);
 
       if (this.shouldStopIteration(iterationResults)) {
@@ -302,7 +307,11 @@ export class Orchestrator {
     return steps;
   }
 
-  private async executeWorkflowIteration(steps: WorkflowStep[], context: Record<string, unknown>): Promise<IterationResult> {
+  private async executeWorkflowIteration(
+    steps: WorkflowStep[],
+    context: Record<string, unknown>,
+    onStep?: (step: IterationStepResult) => void,
+  ): Promise<IterationResult> {
     const iterationResults: IterationResult = { steps: [], final_output: null };
 
     for (let i = 0; i < steps.length; i++) {
@@ -334,6 +343,7 @@ export class Orchestrator {
         };
         if (fallbackFrom) stepResult.fallback_from = fallbackFrom;
         iterationResults.steps.push(stepResult);
+        onStep?.(stepResult);
 
         if (response.success) {
           if (fallbackFrom) {
@@ -360,7 +370,7 @@ export class Orchestrator {
         iterationResults.final_output = response.output;
       } catch (e) {
         this.logger.error(`Error executing step: ${e}`);
-        iterationResults.steps.push({
+        const errorStep: IterationStepResult = {
           agent: step.agentName,
           task: step.taskType,
           success: false,
@@ -368,7 +378,9 @@ export class Orchestrator {
           error: String(e),
           files_modified: [],
           suggestions: [],
-        });
+        };
+        iterationResults.steps.push(errorStep);
+        onStep?.(errorStep);
       }
     }
 
