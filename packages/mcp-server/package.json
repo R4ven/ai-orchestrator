@@ -1,0 +1,34 @@
+{
+  "name": "@ai-orchestrator/mcp-server",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server bridging the Orchestrator and Agentic Team engines, plus code analysis, security, testing, DevOps, and context-memory tools, to IDE-based AI assistants.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "ai-orchestrator-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@ai-orchestrator/agentic-team": "*",
+    "@ai-orchestrator/context-graph": "*",
+    "@ai-orchestrator/orchestrator": "*",
+    "@ai-orchestrator/shared": "*",
+    "@modelcontextprotocol/sdk": "^1.11.0",
+    "js-yaml": "^4.1.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

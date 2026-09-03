@@ -67,11 +67,10 @@ export class Logger {
   private emit(level: LogLevel, message: string, meta?: unknown): void {
     if (!shouldLog(level)) return;
     const line = format(this.namespace, level, message, meta);
-    if (level === "error") {
-      console.error(line);
-    } else {
-      console.log(line);
-    }
+    // Always write to stderr, never stdout: stdout is reserved for actual command
+    // output (and, for the MCP server, the JSON-RPC stdio transport) — mixing log
+    // lines into it would corrupt both.
+    console.error(line);
     if (fileStream) {
       fileStream.write(line.replace(/\x1b\[[0-9;]*m/g, "") + "\n");
     }
