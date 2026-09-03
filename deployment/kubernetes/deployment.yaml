@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator-ui
+  namespace: ai-orchestrator
+  labels: { app: orchestrator-ui }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: orchestrator-ui }
+  template:
+    metadata:
+      labels: { app: orchestrator-ui }
+    spec:
+      containers:
+        - name: orchestrator-ui
+          image: ai-orchestrator:latest
+          command: ["node", "apps/orchestrator-ui/dist/server.js"]
+          ports:
+            - containerPort: 5001
+          envFrom:
+            - configMapRef: { name: ai-orchestrator-config }
+          env:
+            - { name: PORT, value: "5001" }
+          resources:
+            requests: { cpu: "100m", memory: "256Mi" }
+            limits: { cpu: "500m", memory: "512Mi" }
+          livenessProbe:
+            httpGet: { path: /api/health, port: 5001 }
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: { path: /api/health, port: 5001 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agentic-team-ui
+  namespace: ai-orchestrator
+  labels: { app: agentic-team-ui }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app: agentic-team-ui }
+  template:
+    metadata:
+      labels: { app: agentic-team-ui }
+    spec:
+      containers:
+        - name: agentic-team-ui
+          image: ai-orchestrator:latest
+          command: ["node", "apps/agentic-team-ui/dist/server.js"]
+          ports:
+            - containerPort: 5002
+          envFrom:
+            - configMapRef: { name: ai-orchestrator-config }
+          env:
+            - { name: PORT, value: "5002" }
+          resources:
+            requests: { cpu: "100m", memory: "256Mi" }
+            limits: { cpu: "500m", memory: "512Mi" }
+          livenessProbe:
+            httpGet: { path: /api/status, port: 5002 }
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: { path: /api/status, port: 5002 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: context-dashboard
+  namespace: ai-orchestrator
+  labels: { app: context-dashboard }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: context-dashboard }
+  template:
+    metadata:
+      labels: { app: context-dashboard }
+    spec:
+      containers:
+        - name: context-dashboard
+          image: ai-orchestrator:latest
+          command: ["node", "packages/context-dashboard/dist/index.js"]
+          ports:
+            - containerPort: 5003
+          envFrom:
+            - configMapRef: { name: ai-orchestrator-config }
+          env:
+            - { name: PORT, value: "5003" }
+          resources:
+            requests: { cpu: "50m", memory: "128Mi" }
+            limits: { cpu: "250m", memory: "256Mi" }

@@ -1,0 +1,17 @@
+[Unit]
+Description=AI Orchestrator — MCP Server
+After=network.target
+
+[Service]
+Type=simple
+User=appuser
+WorkingDirectory=/opt/ai-orchestrator
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node packages/mcp-server/dist/index.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/log/ai-orchestrator/mcp-server.log
+StandardError=append:/var/log/ai-orchestrator/mcp-server.log
+
+[Install]
+WantedBy=multi-user.target

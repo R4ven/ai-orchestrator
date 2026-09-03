@@ -6,7 +6,7 @@ import express from "express";
 import { createServer } from "node:http";
 import { Server as SocketIOServer } from "socket.io";
 import { getLogger } from "@ai-orchestrator/shared";
-import { Orchestrator, checkHealth } from "@ai-orchestrator/orchestrator";
+import { Orchestrator, checkHealth, getMetricsCollector } from "@ai-orchestrator/orchestrator";
 
 const logger = getLogger("orchestrator_ui");
 const here = dirname(fileURLToPath(import.meta.url));
@@ -22,6 +22,11 @@ async function main(): Promise<void> {
   app.get("/api/agents", (_req, res) => res.json(orchestrator.getAvailableAgents()));
   app.get("/api/workflows", (_req, res) => res.json(orchestrator.getWorkflows()));
   app.get("/api/health", async (_req, res) => res.json(await checkHealth(orchestrator.adapters, orchestrator.isOfflineMode)));
+
+  const metrics = getMetricsCollector();
+  app.get("/metrics", async (_req, res) => {
+    res.type(metrics.getContentType()).send(await metrics.getMetrics());
+  });
 
   const httpServer = createServer(app);
   const io = new SocketIOServer(httpServer, { cors: { origin: "*" } });
