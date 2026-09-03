@@ -1,0 +1,36 @@
+{
+  "name": "ai-orchestrator-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TypeScript rebuild of AI-Agents-Orchestrator: an Orchestrator, an Agentic Team runtime, an MCP server, a Context Dashboard, and Graphify, coordinating cloud and local AI coding assistants.",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"packages/**/*.ts\" \"apps/**/*.ts\"",
+    "clean": "npm run clean --workspaces --if-present",
+    "orchestrator": "npm run start --workspace=@ai-orchestrator/orchestrator --",
+    "agentic-team": "npm run start --workspace=@ai-orchestrator/agentic-team --",
+    "mcp-server": "npm run start --workspace=@ai-orchestrator/mcp-server --",
+    "graphify": "npm run start --workspace=@ai-orchestrator/graphify --",
+    "context-dashboard": "npm run start --workspace=@ai-orchestrator/context-dashboard --"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "eslint": "^8.57.1",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

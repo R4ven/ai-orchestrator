@@ -1,0 +1,23 @@
+{
+  "name": "@ai-orchestrator/context-graph",
+  "version": "0.1.0",
+  "description": "Graph-based persistent context memory (SQLite + FTS5) shared by the Orchestrator and Agentic Team runtimes. Each caller opens its own independent database file.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

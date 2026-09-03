@@ -1,0 +1,36 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.env
+.env.local
+*.log
+npm-debug.log*
+
+# Runtime data
+output/
+workspace/
+logs/
+reports/*.json
+reports/*.html
+!reports/.gitkeep
+sessions/*.json
+!sessions/.gitkeep
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Editors / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Frontend build output
+apps/*/dist/
+apps/*/.output/
+apps/*/.nuxt/
+apps/*/node_modules/
+
+coverage/
+.eslintcache

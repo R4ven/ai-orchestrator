@@ -1,0 +1,25 @@
+{
+  "name": "@ai-orchestrator/shared",
+  "version": "0.1.0",
+  "description": "Shared adapters, resilience primitives, and utilities used by the Orchestrator and Agentic Team runtimes.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "js-yaml": "^4.1.0",
+    "undici": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
