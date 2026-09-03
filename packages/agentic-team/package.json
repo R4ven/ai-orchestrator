@@ -1,0 +1,32 @@
+{
+  "name": "@ai-orchestrator/agentic-team",
+  "version": "0.1.0",
+  "description": "Free role-to-role communication runtime where Project Manager, Architect, Developer, QA, and DevOps roles discuss a task in turns until the lead declares it complete.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "agentic-team": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "start": "tsx src/cli/index.ts",
+    "dev": "tsx watch src/cli/index.ts",
+    "test": "vitest run",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@ai-orchestrator/context-graph": "*",
+    "@ai-orchestrator/shared": "*",
+    "chalk": "^5.4.1",
+    "commander": "^12.1.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

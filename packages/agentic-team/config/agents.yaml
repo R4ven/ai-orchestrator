@@ -1,0 +1,107 @@
+# Agentic Team Configuration
+# Self-contained: this file follows the same `agents:`/`settings:` schema as the
+# Orchestrator's config, plus an `agentic_team:` section for role-to-agent mapping.
+# The Orchestrator and Agentic Team share zero runtime state — each reads its own copy.
+
+agents:
+  codex:
+    type: cli
+    enabled: true
+    command: "codex"
+    timeout: 3600
+    description: "Implementation-focused CLI agent"
+
+  gemini:
+    type: cli
+    enabled: true
+    command: "gemini"
+    timeout: 3600
+    description: "Review/architecture-focused CLI agent"
+
+  claude:
+    type: cli
+    enabled: true
+    command: "claude"
+    timeout: 3600
+    description: "General-purpose CLI agent, often used as team lead"
+
+  copilot:
+    type: cli
+    enabled: false
+    command: "copilot"
+    timeout: 3600
+    description: "Alternative suggestions agent"
+
+  local-code:
+    type: ollama
+    enabled: false
+    model: "codellama:13b"
+    endpoint: "http://localhost:11434"
+    offline: true
+    timeout: 3600
+    capabilities: [code, review]
+
+  local-instruct:
+    type: ollama
+    enabled: false
+    model: "mistral:7b-instruct"
+    endpoint: "http://localhost:11434"
+    offline: true
+    timeout: 3600
+    capabilities: [general, docs]
+
+  local-large:
+    type: llamacpp
+    enabled: false
+    endpoint: "http://localhost:8080"
+    offline: true
+    timeout: 3600
+    capabilities: [code, review, docs]
+
+settings:
+  output_dir: "./output"
+  project_path: ""
+
+  offline:
+    enabled: false
+    auto_detect: true
+
+  fallback:
+    enabled: true
+    map:
+      codex: local-code
+      claude: local-instruct
+      gemini: local-instruct
+
+  agentic_team:
+    max_message_chars: 5000
+    repeat_route_limit: 3
+
+# Team roles: free role-to-role communication with a lead-gated final response.
+agentic_team:
+  lead_role: "project_manager"
+  max_turns: 12
+  roles:
+    project_manager:
+      title: "Project Manager (Team Lead)"
+      agent: "claude"
+      responsibilities: "Initiate work, route subtasks dynamically, and decide final readiness."
+    software_architect:
+      title: "Software Architect"
+      agent: "gemini"
+      responsibilities: "Define architecture, interfaces, and technical constraints."
+    software_developer:
+      title: "Software Developer"
+      agent: "codex"
+      responsibilities: "Implement required code changes."
+    qa_engineer:
+      title: "QA Engineer"
+      agent: "gemini"
+      responsibilities: "Validate quality, edge cases, and regressions."
+    devops_engineer:
+      title: "DevOps Engineer"
+      agent: "claude"
+      responsibilities: "Handle deployment/runtime concerns and operational readiness."
+
+# Notes:
+# - If a role's agent is disabled/unavailable, `agentic-team validate` will report it.
